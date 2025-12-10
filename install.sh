@@ -5,6 +5,61 @@ repo_dir="$HOME/conf"
 config_dir="$HOME/.config"
 backup_dir="$HOME/.config_backup_$(date +%Y%m%d_%H%M%S)"
 
+# Check for required dependencies
+echo "checking dependencies..."
+missing_deps=()
+
+command -v git >/dev/null 2>&1 || missing_deps+=("git")
+command -v tmux >/dev/null 2>&1 || missing_deps+=("tmux")
+command -v nvim >/dev/null 2>&1 || missing_deps+=("nvim")
+command -v fish >/dev/null 2>&1 || missing_deps+=("fish")
+
+if [ ${#missing_deps[@]} -gt 0 ]; then
+  echo "⚠️  Missing dependencies: ${missing_deps[*]}"
+  echo ""
+  
+  install_cmd=""
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    if command -v brew >/dev/null 2>&1; then
+      install_cmd="brew install ${missing_deps[*]}"
+    else
+      echo "Homebrew not found. Please install it first:"
+      echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+      exit 1
+    fi
+  elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if command -v apt >/dev/null 2>&1; then
+      install_cmd="sudo apt update && sudo apt install -y ${missing_deps[*]}"
+    elif command -v yum >/dev/null 2>&1; then
+      install_cmd="sudo yum install -y ${missing_deps[*]}"
+    elif command -v pacman >/dev/null 2>&1; then
+      install_cmd="sudo pacman -S --noconfirm ${missing_deps[*]}"
+    fi
+  fi
+  
+  if [ -n "$install_cmd" ]; then
+    echo "Install command: $install_cmd"
+    echo ""
+    read -p "Install missing dependencies? (Y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+      eval "$install_cmd"
+    else
+      read -p "Continue without installing? (y/N) " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+      fi
+    fi
+  else
+    read -p "Continue anyway? (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      exit 1
+    fi
+  fi
+fi
+
 # Function to backup existing files/dirs
 backup_if_exists() {
   local path="$1"
@@ -64,4 +119,13 @@ if [ -d "$backup_dir" ]; then
   echo "⚠️  Backups created in: $backup_dir"
 fi
 
-echo "setup complete."
+echo ""
+echo "✅ setup complete!"
+echo ""
+echo "Next steps:"
+if command -v tmux >/dev/null 2>&1; then
+  echo "  1. Start tmux and press C-a + I to install plugins"
+fi
+if command -v nvim >/dev/null 2>&1; then
+  echo "  2. Open nvim - plugins will install automatically"
+fi
