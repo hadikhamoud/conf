@@ -14,6 +14,21 @@ command -v tmux >/dev/null 2>&1 || missing_deps+=("tmux")
 command -v nvim >/dev/null 2>&1 || missing_deps+=("nvim")
 command -v fish >/dev/null 2>&1 || missing_deps+=("fish")
 
+# Map command names to package names per package manager
+get_pkg_name() {
+  local cmd="$1"
+  local pm="$2"
+  case "$pm" in
+    apt)
+      case "$cmd" in
+        nvim) echo "neovim" ;;
+        *) echo "$cmd" ;;
+      esac
+      ;;
+    *) echo "$cmd" ;;
+  esac
+}
+
 if [ ${#missing_deps[@]} -gt 0 ]; then
   echo "⚠️  Missing dependencies: ${missing_deps[*]}"
   echo ""
@@ -28,12 +43,21 @@ if [ ${#missing_deps[@]} -gt 0 ]; then
       exit 1
     fi
   elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    pkg_list=()
+    for dep in "${missing_deps[@]}"; do
+      if command -v apt >/dev/null 2>&1; then
+        pkg_list+=("$(get_pkg_name "$dep" apt)")
+      else
+        pkg_list+=("$dep")
+      fi
+    done
+    
     if command -v apt >/dev/null 2>&1; then
-      install_cmd="sudo apt update && sudo apt install -y ${missing_deps[*]}"
+      install_cmd="sudo apt update && sudo apt install -y ${pkg_list[*]}"
     elif command -v yum >/dev/null 2>&1; then
-      install_cmd="sudo yum install -y ${missing_deps[*]}"
+      install_cmd="sudo yum install -y ${pkg_list[*]}"
     elif command -v pacman >/dev/null 2>&1; then
-      install_cmd="sudo pacman -S --noconfirm ${missing_deps[*]}"
+      install_cmd="sudo pacman -S --noconfirm ${pkg_list[*]}"
     fi
   fi
   
