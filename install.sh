@@ -96,7 +96,7 @@ backup_if_exists() {
 
 if [ ! -d "$repo_dir/.git" ]; then
   echo "cloning conf repo..."
-  git clone git@github.com:hadikhamoud/conf.git "$repo_dir"
+  git clone https://github.com/hadikhamoud/conf.git "$repo_dir"
 else
   echo "repo already exists — pulling latest changes..."
   git -C "$repo_dir" pull
