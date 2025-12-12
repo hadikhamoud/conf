@@ -14,69 +14,56 @@ command -v tmux >/dev/null 2>&1 || missing_deps+=("tmux")
 command -v nvim >/dev/null 2>&1 || missing_deps+=("nvim")
 command -v fish >/dev/null 2>&1 || missing_deps+=("fish")
 
-# Map command names to package names per package manager
-get_pkg_name() {
-  local cmd="$1"
-  local pm="$2"
-  case "$pm" in
-    apt)
-      case "$cmd" in
-        nvim) echo "neovim" ;;
-        *) echo "$cmd" ;;
-      esac
-      ;;
-    *) echo "$cmd" ;;
-  esac
+# Install neovim from pre-built archive (latest stable)
+install_nvim_linux() {
+  echo "installing neovim from pre-built archive..."
+  curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+  sudo rm -rf /opt/nvim-linux-x86_64
+  sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+  sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+  rm nvim-linux-x86_64.tar.gz
+  echo "neovim installed to /opt/nvim-linux-x86_64"
 }
 
 if [ ${#missing_deps[@]} -gt 0 ]; then
   echo "⚠️  Missing dependencies: ${missing_deps[*]}"
   echo ""
+  read -p "Install missing dependencies? (Y/n) " -n 1 -r
+  echo
   
-  install_cmd=""
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    if command -v brew >/dev/null 2>&1; then
-      install_cmd="brew install ${missing_deps[*]}"
-    else
-      echo "Homebrew not found. Please install it first:"
-      echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-      exit 1
-    fi
-  elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    pkg_list=()
-    for dep in "${missing_deps[@]}"; do
-      if command -v apt >/dev/null 2>&1; then
-        pkg_list+=("$(get_pkg_name "$dep" apt)")
+  if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      if command -v brew >/dev/null 2>&1; then
+        brew install "${missing_deps[@]}"
       else
-        pkg_list+=("$dep")
-      fi
-    done
-    
-    if command -v apt >/dev/null 2>&1; then
-      install_cmd="sudo apt update && sudo apt install -y ${pkg_list[*]}"
-    elif command -v yum >/dev/null 2>&1; then
-      install_cmd="sudo yum install -y ${pkg_list[*]}"
-    elif command -v pacman >/dev/null 2>&1; then
-      install_cmd="sudo pacman -S --noconfirm ${pkg_list[*]}"
-    fi
-  fi
-  
-  if [ -n "$install_cmd" ]; then
-    echo "Install command: $install_cmd"
-    echo ""
-    read -p "Install missing dependencies? (Y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-      eval "$install_cmd"
-    else
-      read -p "Continue without installing? (y/N) " -n 1 -r
-      echo
-      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Homebrew not found. Please install it first:"
+        echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
         exit 1
+      fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      # Install nvim separately using pre-built archive
+      pkg_list=()
+      for dep in "${missing_deps[@]}"; do
+        if [ "$dep" = "nvim" ]; then
+          install_nvim_linux
+        else
+          pkg_list+=("$dep")
+        fi
+      done
+      
+      # Install remaining packages via package manager
+      if [ ${#pkg_list[@]} -gt 0 ]; then
+        if command -v apt >/dev/null 2>&1; then
+          sudo apt update && sudo apt install -y "${pkg_list[@]}"
+        elif command -v yum >/dev/null 2>&1; then
+          sudo yum install -y "${pkg_list[@]}"
+        elif command -v pacman >/dev/null 2>&1; then
+          sudo pacman -S --noconfirm "${pkg_list[@]}"
+        fi
       fi
     fi
   else
-    read -p "Continue anyway? (y/N) " -n 1 -r
+    read -p "Continue without installing? (y/N) " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
       exit 1
