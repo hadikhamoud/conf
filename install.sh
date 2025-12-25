@@ -5,7 +5,6 @@ repo_dir="$HOME/conf"
 config_dir="$HOME/.config"
 backup_dir="$HOME/.config_backup_$(date +%Y%m%d_%H%M%S)"
 
-# Check for required dependencies
 echo "checking dependencies..."
 missing_deps=()
 
@@ -14,7 +13,6 @@ command -v tmux >/dev/null 2>&1 || missing_deps+=("tmux")
 command -v nvim >/dev/null 2>&1 || missing_deps+=("nvim")
 command -v fish >/dev/null 2>&1 || missing_deps+=("fish")
 
-# Install neovim from pre-built archive (latest stable)
 install_nvim_linux() {
   echo "installing neovim from pre-built archive..."
   curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
@@ -41,7 +39,6 @@ if [ ${#missing_deps[@]} -gt 0 ]; then
         exit 1
       fi
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-      # Install nvim separately using pre-built archive
       pkg_list=()
       for dep in "${missing_deps[@]}"; do
         if [ "$dep" = "nvim" ]; then
@@ -51,7 +48,6 @@ if [ ${#missing_deps[@]} -gt 0 ]; then
         fi
       done
       
-      # Install remaining packages via package manager
       if [ ${#pkg_list[@]} -gt 0 ]; then
         if command -v apt >/dev/null 2>&1; then
           sudo apt update && sudo apt install -y "${pkg_list[@]}"
@@ -104,7 +100,6 @@ for dir in "$repo_dir"/*/; do
   echo "linked $name → $target"
 done
 
-# Link tmux.conf to home directory
 if [ -f "$repo_dir/tmux.conf" ]; then
   if [ -L "$HOME/.tmux.conf" ]; then
     echo "skipping tmux.conf (symlink already exists)"
@@ -115,7 +110,6 @@ if [ -f "$repo_dir/tmux.conf" ]; then
   fi
 fi
 
-# Install TPM (tmux plugin manager)
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   echo "installing tmux plugin manager..."
   mkdir -p "$HOME/.tmux/plugins"
