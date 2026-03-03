@@ -3,6 +3,8 @@ if status is-interactive
     atuin init fish | source
     zoxide init fish | source
     alias cd='z'
+    alias oc='opencode'
+    bash ~/.config/usgc_prof.sh
     
     end
 

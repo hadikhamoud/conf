@@ -1,6 +1,5 @@
 return {
 	"kyazdani42/nvim-tree.lua",
-	enabled = true,
 	dependencies = {
 		"kyazdani42/nvim-web-devicons",
 	},
@@ -11,7 +10,7 @@ return {
 	},
 	opts = {
 		filters = {
-			custom = { ".git", "node_modules", ".vscode", ".next", "dist", "build", "target", ".cargo", "venv", "data" },
+			custom = { "^%.git$", "^node_modules$", "^%.vscode$", "^%.next$", "^dist$", "^build$", "^target$", "^%.cargo$", "^venv$", "^data$" },
 			dotfiles = true,
 			git_ignored = true,
 		},

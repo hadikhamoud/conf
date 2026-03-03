@@ -36,35 +36,40 @@
 --   }
 -- }
 
-return {
-	"rebelot/kanagawa.nvim",
-	lazy = false,
-	priority = 1000,
-	config = function()
-		require("kanagawa").setup({
-			compile = false,
-			undercurl = true,
-			commentStyle = { italic = true },
-			functionStyle = {},
-			keywordStyle = { italic = true },
-			statementStyle = { bold = true },
-			typeStyle = {},
-			transparent = false,
-			dimInactive = false,
-			terminalColors = true,
-			colors = {
-				palette = {},
-				theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
-			},
-			overrides = function(colors)
-				return {}
-			end,
-			theme = "wave",
-			background = {
-				dark = "wave",
-				light = "lotus"
-			},
-		})
-		vim.cmd("colorscheme kanagawa")
-	end,
-}
+-- return {
+-- 	"rebelot/kanagawa.nvim",
+-- 	lazy = false,
+-- 	priority = 1000,
+-- 	config = function()
+-- 		require("kanagawa").setup({
+-- 			compile = false,
+-- 			undercurl = true,
+-- 			commentStyle = { italic = true },
+-- 			functionStyle = {},
+-- 			keywordStyle = { italic = true },
+-- 			statementStyle = { bold = true },
+-- 			typeStyle = {},
+-- 			transparent = false,
+-- 			dimInactive = false,
+-- 			terminalColors = true,
+-- 			colors = {
+-- 				palette = {},
+-- 				theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+-- 			},
+-- 			overrides = function(colors)
+-- 				return {}
+-- 			end,
+-- 			theme = "wave",
+-- 			background = {
+-- 				dark = "wave",
+-- 				light = "lotus"
+-- 			},
+-- 		})
+-- 		vim.cmd("colorscheme kanagawa")
+-- 	end,
+-- }
+
+-- USGC-RETICLE-ST (local colorscheme, no plugin needed)
+-- The colorscheme file lives at ~/.config/nvim/colors/usgc-reticle-st.lua
+vim.cmd("colorscheme usgc-reticle-st")
+return {}

@@ -1,3 +1,12 @@
+-- Disable providers that slow down startup
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_node_provider = 0
+
+-- Add Mason bin to PATH so LSP servers installed via Mason are found
+vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
+
 vim.g.mapleader = " "
 vim.o.number = true
 vim.o.numberwidth = 1
@@ -34,3 +43,7 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "FocusGained" }, {
   pattern = "*",
   command = "checktime"
 })
+
+if vim.fn.has("gui_running") == 1 or vim.g.neovide then
+  vim.opt.guifont = "monospace:h17"
+end

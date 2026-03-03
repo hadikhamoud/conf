@@ -10,6 +10,9 @@ return {
 			markdown = { "prettierd" },
 			html = { "prettierd" },
 		},
-		format_on_save = false,
+		format_on_save = {
+			timeout_ms = 1000,
+			lsp_fallback = true,
+		},
 	},
 }

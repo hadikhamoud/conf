@@ -2,14 +2,21 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     main = "nvim-treesitter.configs",
     opts = {
       highlight = {
         enable = true,
         disable = function(lang, buf)
-          local max_filesize = 100 * 1024 -- 100 KB
+          local max_filesize = 50 * 1024 -- 50 KB
           local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
           if ok and stats and stats.size > max_filesize then
+            return true
+          end
+          local line_count = vim.api.nvim_buf_line_count(buf)
+          if line_count > 5000 then
             return true
           end
         end,
@@ -23,6 +30,10 @@ return {
         "python",
         "zig",
       },
+      indent = {
+        enable = true,
+        disable = { "python" },
+      },
       textobjects = {
         select = {
           enable = true,
@@ -30,32 +41,9 @@ return {
           keymaps = {
             ["af"] = "@function.outer",
             ["if"] = "@function.inner",
-            ["aa"] = "@parameter.outer",
-            ["ia"] = "@parameter.inner",
-            ["a="] = "@assignment.outer",
-            ["i="] = "@assignment.inner",
-          },
-        },
-        move = {
-          enable = true,
-          set_jumps = true,
-          goto_next_start = {
-            ["]m"] = "@function.outer",
-          },
-          goto_previous_start = {
-            ["[m"] = "@function.outer",
           },
         },
       },
-    },
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
-    },
-  },
-  {
-    "nvim-treesitter/nvim-treesitter-context",
-    opts = {
-      max_lines = 1,
     },
   },
 }

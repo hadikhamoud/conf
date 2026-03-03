@@ -1,41 +1,17 @@
 return {
-	"nvim-telescope/telescope.nvim",
-	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"debugloop/telescope-undo.nvim",
-		"isak102/telescope-git-file-history.nvim",
-		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-	},
+	"dmtrKovalenko/fff.nvim",
+	build = function()
+		require("fff.download").download_or_build_binary()
+	end,
 	lazy = false,
 	opts = {
-		pickers = {
-			find_files = {
-				hidden = true,
-			},
-			git_files = {
-				hidden = true,
-			},
-		},
-		defaults = {
-			file_ignore_patterns = {
-				"node_modules/*",
-				"venv/*",
-				".venv/*",
-			},
-		},
-		extensions = {
-			fzf = {},
+		logging = {
+			enabled = false,
 		},
 	},
-	config = function(_, opts)
-		require("telescope").setup(opts)
-		require("telescope").load_extension("undo")
-		require("telescope").load_extension("fzf")
-		require("telescope").load_extension("git_file_history")
-	end,
 	keys = {
-		{ "<C-p>", "<cmd>Telescope git_files<cr>", desc = "Find files" },
-		{ "<leader>fa", "<cmd>Telescope find_files<cr>", desc = "Find all files" },
-		{ "<leader>fi", "<cmd>Telescope live_grep<cr>", desc = "Find in files" },
+		{ "<C-p>", function() require("fff").find_in_git_root() end, desc = "Find files" },
+		{ "<leader>fa", function() require("fff").find_files() end, desc = "Find all files" },
+		{ "<leader>fi", function() require("fff").live_grep() end, desc = "Find in files" },
 	},
 }
