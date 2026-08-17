@@ -69,7 +69,33 @@
 -- 	end,
 -- }
 
+return {
+	"folke/tokyonight.nvim",
+	lazy = false,
+	priority = 1000,
+	config = function()
+		require("tokyonight").setup({
+			style = "night", -- "storm", "night", "moon", "day"
+			light_style = "day",
+			transparent = false,
+			terminal_colors = true,
+			styles = {
+				comments = { italic = true },
+				keywords = { italic = true },
+				functions = {},
+				variables = {},
+				sidebars = "dark",
+				floats = "dark",
+			},
+			sidebars = { "qf", "help", "nvim-tree", "neo-tree" },
+			dim_inactive = false,
+			lualine_bold = false,
+		})
+		vim.cmd("colorscheme tokyonight")
+	end,
+}
+
 -- USGC-RETICLE-ST (local colorscheme, no plugin needed)
 -- The colorscheme file lives at ~/.config/nvim/colors/usgc-reticle-st.lua
-vim.cmd("colorscheme usgc-reticle-st")
-return {}
+-- vim.cmd("colorscheme usgc-reticle-st")
+-- return {}

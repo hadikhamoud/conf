@@ -3,7 +3,6 @@ return {
 	dependencies = {
 		"kyazdani42/nvim-web-devicons",
 	},
-	lazy = false,
 	keys = {
 		{ "<leader>ff", "<cmd>NvimTreeFindFile<cr>", desc = "Find file in filetree" },
 		{ "<C-n>", "<cmd>NvimTreeToggle<cr>", desc = "Find file in filetree" },

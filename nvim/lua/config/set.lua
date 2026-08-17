@@ -19,9 +19,10 @@ vim.o.wrap = true
 vim.o.signcolumn = "yes"
 vim.opt.smartindent = true
 vim.opt.wrap = true
-vim.o.foldlevel = 99
-vim.o.foldmethod = "indent"
-vim.o.foldenable = true
+-- Indent folds are recalculated while text changes and can make insert mode
+-- noticeably laggy in larger/nested files. Keep folding available on demand.
+vim.o.foldmethod = "manual"
+vim.o.foldenable = false
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
 vim.opt.swapfile = false
@@ -34,12 +35,8 @@ vim.opt.autoread = true
 vim.opt.exrc = true
 vim.opt.secure = true
 vim.o.shell = "/bin/bash"
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
-  pattern = "*",
-  command = "checktime"
-})
-
-vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "FocusGained" }, {
+-- Avoid synchronous filesystem checks on every buffer entry and while typing.
+vim.api.nvim_create_autocmd({ "CursorHold", "FocusGained" }, {
   pattern = "*",
   command = "checktime"
 })

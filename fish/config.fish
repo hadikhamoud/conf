@@ -1,16 +1,23 @@
 if status is-interactive
-    # Commands to run in interactive sessions can go here
-    atuin init fish | source
-    zoxide init fish | source
-    alias cd='z'
-    alias oc='opencode'
-    bash ~/.config/usgc_prof.sh
-    
+    if command -q atuin
+        atuin init fish | source
     end
+    if command -q zoxide
+        zoxide init fish | source
+        alias cd='z'
+    end
+    alias oc='opencode'
+    alias claud='CLAUDE_CODE_NO_FLICKER=1 claude --dangerously-skip-permissions'
+    if test -f ~/.config/usgc_prof.sh
+        bash ~/.config/usgc_prof.sh
+    end
+end
 
 
-set -g PATH $PATH ~/google-cloud-sdk/bin
-set -x CLOUDSDK_PYTHON (which python3.11)
+fish_add_path "$HOME/.local/bin" "$HOME/.atuin/bin" "$HOME/google-cloud-sdk/bin"
+if command -q python3.11
+    set -x CLOUDSDK_PYTHON (command -s python3.11)
+end
 
 set -gx PATH "/Users/hadihamoud/.local/state/fnm_multishells/77380_1772859005091/bin" $PATH;
 set -gx FNM_MULTISHELL_PATH "/Users/hadihamoud/.local/state/fnm_multishells/77380_1772859005091";
@@ -22,4 +29,14 @@ set -gx FNM_COREPACK_ENABLED "false";
 set -gx FNM_RESOLVE_ENGINES "true";
 set -gx FNM_ARCH "arm64";
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/hadihamoud/google-cloud-sdk/path.fish.inc' ]; . '/Users/hadihamoud/google-cloud-sdk/path.fish.inc'; end
+if test -f "$HOME/google-cloud-sdk/path.fish.inc"
+    source "$HOME/google-cloud-sdk/path.fish.inc"
+end
+
+# opencode
+fish_add_path "$HOME/.opencode/bin"
+
+# Raise open-file limit for dcf-etl local downloads (default macOS limit is too low for 200 concurrent downloads)
+if test (uname) = Darwin
+    ulimit -n 10240 2>/dev/null
+end
